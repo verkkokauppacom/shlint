@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+cd "$(dirname "$0")" || exit 1
+
+function usage {
+    cat <<EOF
+Usage: $0 [file or folder]
+
+Lint shell script files from file or folder
+EOF
+}
+
+[ -z "$1" ] && (usage 1>&2; exit 1)
+
+target="$1"
+
+if [ -f "$target" ]
+then
+    linguist "$target" | grep "language: *Shell" | shellcheck "$target"
+elif [ -d "$target" ]
+then
+    find "$target" -type f -print0 |
+        while IFS= read -r -d $'\0' shell_script
+        do
+            linguist "$shell_script" |
+                grep -q 'language: *Shell' && echo -n "$shell_script" && shellcheck "$shell_script"
+            [ $? -eq 0 ] && echo -e " \e[32mOK\e[0m"
+        done
+else
+    echo "No file or directory found from $target" 1>&2
+    exit 1
+fi
+
