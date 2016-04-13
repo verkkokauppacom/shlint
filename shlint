@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 
-cd "$(dirname "$0")" || exit 1
-
 function usage {
     cat <<EOF
 Usage: $0 [file or folder]
 
-Lint shell script files from file or folder
+Lint shell script files from a single file or from folder
 EOF
 }
 
@@ -27,7 +25,7 @@ then
             [ $? -eq 0 ] && echo -e " \e[32mOK\e[0m"
         done
 else
-    echo "No file or directory found from $target" 1>&2
+    echo "No files to shlint from $target" 1>&2
     exit 1
 fi
 
